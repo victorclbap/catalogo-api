@@ -1,5 +1,8 @@
-﻿using catalogo_api.Context;
+﻿using AutoMapper;
+using catalogo_api.Context;
+using catalogo_api.DTOs;
 using catalogo_api.Models;
+using catalogo_api.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,86 +14,94 @@ namespace catalogo_api.Controllers
     public class ProdutosController : ControllerBase
     {
 
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public ProdutosController(AppDbContext context)
+
+        public ProdutosController(IUnitOfWork context, IMapper mapper)
         {
-            _context = context;
+            _unitOfWork = context;
+            _mapper = mapper;
+        }
+
+
+        [HttpGet("menorPreco")]
+        public IEnumerable<ProdutoDTO> GetProdutoPorPreco()
+        {
+            var produtos = _unitOfWork.ProdutoRepository.GetProdutosPorPreco().ToList();
+            var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
+            return produtosDTO;
         }
 
 
         [HttpGet]
-        // retorna tanto o tipo quanto a action
-        public ActionResult<IEnumerable<Produto>> Get()
+        public ActionResult<IEnumerable<ProdutoDTO>> Get()
         {
-            // as no tracking melhora a performance pq n armazena no chache
-            // utilizado quando não será realizado alterações com os dados, como em get
-            var produtos = _context.Produtos.Take(10).AsNoTracking().ToList();
-            if (produtos is null)
-            {
-                return NotFound("Produtos não encontrados");
-            }
-            return produtos;
-
+            var produtos = _unitOfWork.ProdutoRepository.Get().ToList();
+            var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
+            return produtosDTO;
         }
 
-        // utiliza também a rota obter produto para recuperar um produto por id,
-        // para complementar a criação por post 
+
+
 
         [HttpGet("{id:int}", Name = "ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        public ActionResult<ProdutoDTO> Get(int id)
         {
-            var produto = _context.Produtos.FirstOrDefault(produto => produto.ProdutoId == id);
-            if (produto is null)
+            var produto = _unitOfWork.ProdutoRepository.GetById(p => p.ProdutoId == id);
+
+            if (produto == null)
             {
-                return NotFound("Produto não encontrado");
+                return NotFound();
             }
-            return produto;
+
+            var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
+            return produtoDTO;
+
         }
 
 
         [HttpPost]
-        public ActionResult Post(Produto produto)
+        public ActionResult Post([FromBody] ProdutoDTO produtoDto)
         {
-            if (produto is null)
-            {
-                return BadRequest();
-            }
+            var produto = _mapper.Map<Produto>(produtoDto);
+            _unitOfWork.ProdutoRepository.Add(produto);
+            _unitOfWork.Commit();
 
-            _context.Produtos.Add(produto);
-            _context.SaveChanges();
-
-            // indica a rota que irá mostrar o produto criado
-            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
+            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produtoDto);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produto)
+        public ActionResult Put(int id, ProdutoDTO produtoDto)
         {
-            if (id != produto.ProdutoId)
+            if (id != produtoDto.ProdutoId)
             {
                 return BadRequest();
             }
-            // indica que a entidade produto está em um estado modificado e precisa ser presistido
-            _context.Entry(produto).State = EntityState.Modified;
-            _context.SaveChanges();
 
-            return Ok(produto);
+            var produto = _mapper.Map<Produto>(produtoDto);
+            _unitOfWork.ProdutoRepository.Update(produto);
+            _unitOfWork.Commit();
+
+            return Ok();
+
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ProdutoDTO> Delete(int id)
         {
-            var produto = _context.Produtos.FirstOrDefault(produto => produto.ProdutoId == id);
 
-            if (produto is null)
+            var produto = _unitOfWork.ProdutoRepository.GetById(p => p.ProdutoId == id);
+            if (produto == null)
             {
-                return NotFound("Produto não encontrado!");
+                return NotFound();
             }
-            _context.Produtos.Remove(produto);
-            _context.SaveChanges();
 
-            return Ok(produto);
+            _unitOfWork.ProdutoRepository.Delete(produto);
+            _unitOfWork.Commit();
+
+            var produtoDto = _mapper.Map<ProdutoDTO>(produto);
+            return produtoDto;
         }
 
     }
