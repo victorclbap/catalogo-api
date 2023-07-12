@@ -1,6 +1,6 @@
 ﻿namespace catalogo_api.Pagination
 {
-    public class QueryStringParameters
+    public class QueryStringParameters : QueryStringParameters
     {
     }
 }

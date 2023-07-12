@@ -11,9 +11,11 @@ namespace catalogo_api.Repository
         }
 
 
-        public IEnumerable<Produto> GetProdutos(ProdutosParameters produtosParameters)
+        public PagedList<Produto> GetProdutos(ProdutosParameters produtosParameters)
         {
-            return Get().OrderBy(p => p.Nome).Skip((produtosParameters.PageNumber - 1) * produtosParameters.pageSize).Take(produtosParameters.pageSize).ToList();
+            // return Get().OrderBy(p => p.Nome).Skip((produtosParameters.PageNumber - 1) * produtosParameters.pageSize).Take(produtosParameters.pageSize).ToList();
+            return PagedList<Produto>.ToPagedList(Get().OrderBy(on => on.ProdutoId), produtosParameters.PageNumber, produtosParameters.PageSize);
+
         }
 
         public IEnumerable<Produto> GetProdutosPorPreco()

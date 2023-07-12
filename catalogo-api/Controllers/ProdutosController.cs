@@ -7,6 +7,7 @@ using catalogo_api.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace catalogo_api.Controllers
 {
@@ -38,12 +39,23 @@ namespace catalogo_api.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
         {
-            var produtos = _unitOfWork.ProdutoRepository.GetProdutos(produtosParameters).ToList();
+            var produtos = _unitOfWork.ProdutoRepository.GetProdutos(produtosParameters);
+
+            var metadata = new
+            {
+                produtos.TotalCount,
+                produtos.PageSize,
+                produtos.CurrentPage,
+                produtos.TotalPages,
+                produtos.HasNext,
+                produtos.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
             var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
             return produtosDTO;
         }
-
-
 
 
         [HttpGet("{id:int}", Name = "ObterProduto")]
