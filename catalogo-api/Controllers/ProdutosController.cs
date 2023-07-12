@@ -2,6 +2,7 @@
 using catalogo_api.Context;
 using catalogo_api.DTOs;
 using catalogo_api.Models;
+using catalogo_api.Pagination;
 using catalogo_api.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -35,9 +36,9 @@ namespace catalogo_api.Controllers
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<ProdutoDTO>> Get()
+        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
         {
-            var produtos = _unitOfWork.ProdutoRepository.Get().ToList();
+            var produtos = _unitOfWork.ProdutoRepository.GetProdutos(produtosParameters).ToList();
             var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
             return produtosDTO;
         }

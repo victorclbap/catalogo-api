@@ -2,10 +2,12 @@
 using catalogo_api.Context;
 using catalogo_api.DTOs;
 using catalogo_api.Models;
+using catalogo_api.Pagination;
 using catalogo_api.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace catalogo_api.Controllers
 {
@@ -26,27 +28,39 @@ namespace catalogo_api.Controllers
 
 
         [HttpGet("produtos")]
-        public IEnumerable<Categoria> getCategoriasProdutos()
+        public IEnumerable<CategoriaDTO> getCategoriasProdutos()
         {
             var categorias = _unitOfWork.CategoriaRepository.GetCategoriasProdutos().ToList();
-            var categoriasDto = _mapper.Map<List<Categoria>>(categorias);
+            var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
             return categoriasDto;
         }
 
 
         [HttpGet]
 
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters categoriasParameters)
         {
-            var categorias = _unitOfWork.CategoriaRepository.Get().ToList();
-            var categoriasDto = _mapper.Map<List<Categoria>>(categorias);
+            var categorias = _unitOfWork.CategoriaRepository.GetCategorias(categoriasParameters);
+
+            var metadata = new
+            {
+                categorias.TotalCount,
+                categorias.PageSize,
+                categorias.CurrentPage,
+                categorias.TotalPages,
+                categorias.HasNext,
+                categorias.HasPrevious
+
+            };
+            Response.Headers.Add("X-PAgination", JsonConvert.SerializeObject(metadata));
+            var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
             return categoriasDto;
         }
 
 
         [HttpGet("{id:int}", Name = "ObterCategoria")]
 
-        public ActionResult<Categoria> Get(int id)
+        public ActionResult<CategoriaDTO> Get(int id)
         {
 
             var categoria = _unitOfWork.CategoriaRepository.GetById(c => c.CategoriaId == id);
@@ -55,7 +69,7 @@ namespace catalogo_api.Controllers
                 return NotFound();
             }
 
-            var categoriaDto = _mapper.Map<Categoria>(categoria);
+            var categoriaDto = _mapper.Map<CategoriaDTO>(categoria);
             return categoriaDto;
         }
 
