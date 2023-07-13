@@ -18,7 +18,9 @@ namespace catalogo_api.Models
 
         // decimal possui precisão maior
         [Required]
-        [Column(TypeName = "decimal(10,2)")] // define a coluna como tendo 10 dígitos com 2 casas decimais
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "decimal(8,2)")] // define a coluna como tendo 8 dígitos com 2 casas decimais
+        [Range(1, 1000, ErrorMessage = "O preço deve estar entre {1} e {2}")]
         public decimal Preco { get; set; }
 
         [Required]

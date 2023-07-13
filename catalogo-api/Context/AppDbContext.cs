@@ -1,11 +1,12 @@
 ﻿using catalogo_api.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace catalogo_api.Context
 {
     // é necessario herdar da classe db context
     // estabelece o relacionamento entre o banco de dados e as entidades
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext
     {
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
