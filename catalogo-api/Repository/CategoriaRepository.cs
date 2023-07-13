@@ -10,14 +10,14 @@ namespace catalogo_api.Repository
         public CategoriaRepository(AppDbContext contexto) : base(contexto)
         {
         }
-        public PagedList<Categoria> GetCategorias(CategoriasParameters categoriaParameters)
+        public async Task<PagedList<Categoria>> GetCategorias(CategoriasParameters categoriaParameters)
         {
-            return PagedList<Categoria>.ToPagedList(Get().OrderBy(c => c.Nome), categoriaParameters.PageNumber, categoriaParameters.PageSize);
+            return await PagedList<Categoria>.ToPagedList(Get().OrderBy(c => c.Nome), categoriaParameters.PageNumber, categoriaParameters.PageSize);
         }
 
-        public IEnumerable<Categoria> GetCategoriasProdutos()
+        public async Task<IEnumerable<Categoria>> GetCategoriasProdutos()
         {
-            return Get().Include(c => c.Produtos);
+            return await Get().Include(c => c.Produtos).ToListAsync();
         }
     }
 }

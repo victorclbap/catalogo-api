@@ -6,7 +6,7 @@ namespace catalogo_api.Repository
     public interface IRepository<T>
     {
         IQueryable<T> Get();
-        T GetById(Expression<Func<T, bool>> predicate);
+        Task<T> GetById(Expression<Func<T, bool>> predicate);
         void Add(T entity);
         void Update(T entity);
         void Delete(T entity);

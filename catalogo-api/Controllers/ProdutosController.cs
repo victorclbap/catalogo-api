@@ -28,18 +28,18 @@ namespace catalogo_api.Controllers
 
 
         [HttpGet("menorPreco")]
-        public IEnumerable<ProdutoDTO> GetProdutoPorPreco()
+        public async Task<IEnumerable<ProdutoDTO>> GetProdutoPorPreco()
         {
-            var produtos = _unitOfWork.ProdutoRepository.GetProdutosPorPreco().ToList();
+            var produtos = await _unitOfWork.ProdutoRepository.GetProdutosPorPreco();
             var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
             return produtosDTO;
         }
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> Get([FromQuery] ProdutosParameters produtosParameters)
         {
-            var produtos = _unitOfWork.ProdutoRepository.GetProdutos(produtosParameters);
+            var produtos = await _unitOfWork.ProdutoRepository.GetProdutos(produtosParameters);
 
             var metadata = new
             {
@@ -59,9 +59,9 @@ namespace catalogo_api.Controllers
 
 
         [HttpGet("{id:int}", Name = "ObterProduto")]
-        public ActionResult<ProdutoDTO> Get(int id)
+        public async Task<ActionResult<ProdutoDTO>> Get(int id)
         {
-            var produto = _unitOfWork.ProdutoRepository.GetById(p => p.ProdutoId == id);
+            var produto = await _unitOfWork.ProdutoRepository.GetById(p => p.ProdutoId == id);
 
             if (produto == null)
             {
@@ -75,17 +75,17 @@ namespace catalogo_api.Controllers
 
 
         [HttpPost]
-        public ActionResult Post([FromBody] ProdutoDTO produtoDto)
+        public async Task<ActionResult> Post([FromBody] ProdutoDTO produtoDto)
         {
             var produto = _mapper.Map<Produto>(produtoDto);
             _unitOfWork.ProdutoRepository.Add(produto);
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
 
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produtoDto);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, ProdutoDTO produtoDto)
+        public async Task<ActionResult> Put(int id, ProdutoDTO produtoDto)
         {
             if (id != produtoDto.ProdutoId)
             {
@@ -94,24 +94,24 @@ namespace catalogo_api.Controllers
 
             var produto = _mapper.Map<Produto>(produtoDto);
             _unitOfWork.ProdutoRepository.Update(produto);
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
 
             return Ok();
 
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult<ProdutoDTO> Delete(int id)
+        public async Task<ActionResult<ProdutoDTO>> Delete(int id)
         {
 
-            var produto = _unitOfWork.ProdutoRepository.GetById(p => p.ProdutoId == id);
+            var produto = await _unitOfWork.ProdutoRepository.GetById(p => p.ProdutoId == id);
             if (produto == null)
             {
                 return NotFound();
             }
 
             _unitOfWork.ProdutoRepository.Delete(produto);
-            _unitOfWork.Commit();
+            await _unitOfWork.Commit();
 
             var produtoDto = _mapper.Map<ProdutoDTO>(produto);
             return produtoDto;
