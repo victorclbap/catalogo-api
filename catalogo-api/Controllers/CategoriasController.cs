@@ -52,7 +52,7 @@ namespace catalogo_api.Controllers
                 categorias.HasPrevious
 
             };
-            Response.Headers.Add("X-PAgination", JsonConvert.SerializeObject(metadata));
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
             var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
             return categoriasDto;
         }

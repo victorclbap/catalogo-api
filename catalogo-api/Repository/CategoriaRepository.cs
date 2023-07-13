@@ -12,7 +12,7 @@ namespace catalogo_api.Repository
         }
         public PagedList<Categoria> GetCategorias(CategoriasParameters categoriaParameters)
         {
-            return PagedList<Categoria>.ToPagedList(Get().OrderBy(on => on.Nome), categoriaParameters.PageNumber, categoriaParameters.pagrSize);
+            return PagedList<Categoria>.ToPagedList(Get().OrderBy(c => c.Nome), categoriaParameters.PageNumber, categoriaParameters.PageSize);
         }
 
         public IEnumerable<Categoria> GetCategoriasProdutos()
