@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
-using catalogo_api.Context;
 using catalogo_api.DTOs;
 using catalogo_api.Models;
 using catalogo_api.Pagination;
 using catalogo_api.Repository;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace catalogo_api.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("[controller]")]
     [ApiController]
     public class CategoriasController : ControllerBase
@@ -24,7 +23,6 @@ namespace catalogo_api.Controllers
             _unitOfWork = context;
             _mapper = mapper;
         }
-
 
 
         [HttpGet("produtos")]

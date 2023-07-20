@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace catalogo_api.Context
 {
-    // é necessario herdar da classe db context
+    // Microsoft.AspNet.Identity.EntityFramework - pacote
+
     // estabelece o relacionamento entre o banco de dados e as entidades
+    // é necessario herdar da classe db context ou identity db context qdo for o caso
     public class AppDbContext : IdentityDbContext
     {
 

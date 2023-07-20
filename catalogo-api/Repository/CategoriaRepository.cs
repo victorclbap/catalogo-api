@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace catalogo_api.Repository
 {
+    //Repository<Categoria> -> atenção à adição do tipo para acesso à entidade
+    //O tipo é passado para a classe "pai" também
     public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
     {
         public CategoriaRepository(AppDbContext contexto) : base(contexto)

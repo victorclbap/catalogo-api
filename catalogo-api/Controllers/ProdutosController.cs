@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
-using catalogo_api.Context;
 using catalogo_api.DTOs;
 using catalogo_api.Models;
 using catalogo_api.Pagination;
 using catalogo_api.Repository;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace catalogo_api.Controllers
@@ -22,7 +19,7 @@ namespace catalogo_api.Controllers
 
         public ProdutosController(IUnitOfWork context, IMapper mapper)
         {
-            _unitOfWork = context;
+            _unitOfWork = context; //injeção do serviço do unity of work que utiliza context
             _mapper = mapper;
         }
 
@@ -41,6 +38,8 @@ namespace catalogo_api.Controllers
         {
             var produtos = await _unitOfWork.ProdutoRepository.GetProdutos(produtosParameters);
 
+            // possível pois GetProdutos retorna um pagedlist
+
             var metadata = new
             {
                 produtos.TotalCount,
@@ -51,7 +50,7 @@ namespace catalogo_api.Controllers
                 produtos.HasPrevious
             };
 
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata)); // serializa os dados do tipo anônimo para string json
 
             var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
             return produtosDTO;

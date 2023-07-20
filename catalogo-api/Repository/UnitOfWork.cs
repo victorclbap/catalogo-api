@@ -1,11 +1,11 @@
 ﻿using catalogo_api.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace catalogo_api.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
-
+        // todos os repositórios partilham da mesma instância de dbcontext
+        // é necessário adicionar como um serviço em program para utilizar
 
         private ProdutoRepository? _produtoRepository;
         private CategoriaRepository? _categoriaRepository;
@@ -40,6 +40,7 @@ namespace catalogo_api.Repository
             await _context.SaveChangesAsync();
         }
 
+        // libera recursos do contexto
         public void Dispose()
         {
             _context.Dispose();

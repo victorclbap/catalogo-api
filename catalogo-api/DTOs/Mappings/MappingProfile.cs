@@ -5,7 +5,9 @@ namespace catalogo_api.DTOs.Mappings
 {
     public class MappingProfile : Profile
     {
-
+        //pacotes 
+        // AutoMapper
+        // AutoMapper.Extensions.Mycrosoft.DependencyInjection
         public MappingProfile()
         {
             CreateMap<Produto, ProdutoDTO>().ReverseMap();

@@ -9,11 +9,11 @@ namespace catalogo_api.Models
     {
         [Key]
         public int ProdutoId { get; set; }
-        [Required]
-        [StringLength(80)]
+        [Required(ErrorMessage = "O nome é obrigatório")]
+        [StringLength(80, ErrorMessage = "O nome deve ter no máximo {1} e bo mínimo {2} caracteres ")]
         public string? Nome { get; set; }
         [Required]
-        [StringLength(300)]
+        [StringLength(300, ErrorMessage = "A descrição deve ter no máximo {1} caracteres")]
         public string? Descricao { get; set; }
 
         // decimal possui precisão maior
@@ -24,7 +24,7 @@ namespace catalogo_api.Models
         public decimal Preco { get; set; }
 
         [Required]
-        [StringLength(300)]
+        [StringLength(300, MinimumLength = 10)]
         public string? ImagemUrl { get; set; }
         public float Estoque { get; set; }
         public DateTime DataCadastro { get; set; }

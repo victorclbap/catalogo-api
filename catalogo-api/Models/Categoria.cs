@@ -14,7 +14,6 @@ namespace catalogo_api.Models
             Produtos = new Collection<Produto>();
         }
 
-
         //quando possui id no nome o EF entende que é uma chave primária quando cria as tabelas
         [Key]
         public int CategoriaId { get; set; }

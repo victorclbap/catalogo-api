@@ -19,10 +19,11 @@ namespace catalogo_api.Pagination
             CurrentPage = pageNumber;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 
-            AddRange(items);
+            AddRange(items); // PagedList<T> herda de List<T>, portanto é uma lista
 
         }
 
+        // método que aciona o contrutor do PagedList
         public static async Task<PagedList<T>> ToPagedList(IQueryable<T> source, int pageNumber, int pageSize)
         {
             var count = source.Count();
